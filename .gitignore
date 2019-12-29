@@ -1,1 +1,4 @@
 google/credentials
+google/credentials.json
+**/.DS_Store*
+google/token.pickle
