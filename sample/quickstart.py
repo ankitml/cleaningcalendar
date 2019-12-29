@@ -115,6 +115,7 @@ def create_event():
         calendarId='primary',
         body=EVENT_TEMPLATE,
         sendUpdates='all',
+        supportsAttachments=True,
     ).execute()
     print(f"Event is here : {event.get('htmlLink')}")
 
@@ -122,28 +123,3 @@ def create_event():
 if __name__ == '__main__':
     create_event()
 # [END calendar_quickstart]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

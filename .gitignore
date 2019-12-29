@@ -1,4 +1,4 @@
-google/credentials
-google/credentials.json
+**/credentials*
+**/credentials.json*
 **/.DS_Store*
-google/token.pickle
+**/token.pickle*
