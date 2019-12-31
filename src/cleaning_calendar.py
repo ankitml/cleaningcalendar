@@ -1,4 +1,5 @@
 from parse_source import parse
+from jinja2 import Template
 import datetime
 import source
 import time
@@ -12,7 +13,8 @@ def get_source_data():
 
 
 def construct_description(tasks):
-    pass
+    template = Template("<h4>Tasks</h4><ul> {% for task in tasks %} <li>{{ task }}</li> {% endfor %} </ul>")
+    return template.render(tasks=tasks)
 
 def run():
     source_data = get_source_data()
@@ -29,8 +31,6 @@ def run():
             '%Y-%m-%d'
         )
         date_tuple = instance_date.year, instance_date.month, instance_date.day
-        import ipdb
-        ipdb.set_trace()
         description = construct_description(data.get(date_tuple))
         calendar.modify_single_instance_description(
             instance,
