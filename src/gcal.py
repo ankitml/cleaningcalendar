@@ -102,8 +102,13 @@ class GoogleCalendar:
         body = {
             'description': description,
         }
-        event = self.service.events().patch(
-            calendarId='primary',
-            eventId=event_instance['id'],
-            body=body,
-        ).execute()
+        try:
+            event = self.service.events().patch(
+                calendarId='primary',
+                eventId=event_instance['id'],
+                body=body,
+            ).execute()
+        except:
+            import ipdb
+            ipdb.set_trace()
+            pass

@@ -1,4 +1,5 @@
 from parse_source import parse
+from random import random
 from jinja2 import Template
 import datetime
 import source
@@ -25,7 +26,8 @@ def run():
     calendar_event = calendar.create_reoccuring_event()
     all_cal_instances = calendar.get_all_instances_of_reoccuring_event(calendar_event)
     for i, instance in enumerate(all_cal_instances):
-        time.sleep(.5)
+        print(i)
+        time.sleep(2 + random()*5)
         instance_date = datetime.datetime.strptime(
             instance['start']['dateTime'][0:10],
             '%Y-%m-%d'
@@ -40,4 +42,3 @@ def run():
 
 if __name__ == '__main__':
     run()
-
