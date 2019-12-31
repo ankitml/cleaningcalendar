@@ -8,10 +8,12 @@ def daily_dates():
     start_date = datetime.date.today()
     return rr.rrule(rr.DAILY, count=365, dtstart=start_date)
 
+
 def alternate_day_dates():
     start_date = datetime.date.today()
     end_date = start_date + rd.relativedelta(days=365)
     return rr.rrule(rr.DAILY, interval=2, dtstart=start_date, until=end_date)
+
 
 def weekly_dates():
     """
@@ -40,6 +42,7 @@ def fortnight_dates():
         wkst=rr.SU,
         byweekday=(rr.FR),
     )
+
 
 def monthly_dates():
     """
