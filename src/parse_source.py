@@ -1,14 +1,7 @@
-import source
 import datetime
 import dateutil.relativedelta as rd
 import dateutil.rrule as rr
 from collections import defaultdict
-
-
-def get_source_data():
-    url = 'https://docs.google.com/spreadsheets/d/1J6B-dp2syrz_uQIy0BvyxKas8InCUWXG4Fn9hKeMRZI/edit?usp=sharing'
-    _, data = source.convert_to_dict(source.get_csv_data(url))
-    return data
 
 
 def daily_dates():
@@ -121,16 +114,9 @@ def convert_to_masterdict(data):
             masterdict[date_to_tuple(date)].append(task)
     return masterdict
 
-def parse():
-    return convert_to_masterdict(get_source_data())
+def parse(source_data):
+    return convert_to_masterdict(source_data)
 
-
-
-if __name__ == '__main__':
-    data = get_source_data()
-    master_dict = convert_to_masterdict(data)
-    for date, tasks in master_dict.items():
-        print(f"{date} : {','.join(tasks)}")
 
 """
 get data in the form of list of dicts. Convert it into a dictionary of lists,

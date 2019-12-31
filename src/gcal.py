@@ -9,35 +9,44 @@ from google.auth.transport.requests import Request
 
 class GoogleCalendar:
 
-    EVENT_TEMPLATE = {
-      'summary': "Today's cleaning tasks",
-      'start': {
-        'dateTime': '2020-01-01T09:00:00-07:00',
-        'timeZone': 'America/Toronto',
-      },
-      'end': {
-        'dateTime': '2020-01-01T10:00:00-07:00',
-        'timeZone': 'America/Toronto',
-      },
-      'recurrence': [
-        'RRULE:FREQ=DAILY;COUNT=10'
-      ],
-      'attendees': [
-        {'email': 'ankitmittaliitb@gmail.com'},
-      ],
-      'reminders': {
-        'useDefault': False,
-        'overrides': [
-          {'method': 'email', 'minutes': 24 * 60},
-        ],
-      },
-    }
+    def get_template(self, n_days):
+        return {
+          'summary': "Today's cleaning tasks",
+          'start': {
+            'dateTime': datetime.datetime.strftime(
+                self.start_date,
+                '%Y-%m-%dT%H:%M:%S-04:00'
+            ),
+            'timeZone': 'America/Toronto',
+          },
+          'end': {
+            'dateTime': datetime.datetime.strftime(
+                self.start_date + datetime.timedelta(hours=1),
+                '%Y-%m-%dT%H:%M:%S-04:00'
+            ),
+            'timeZone': 'America/Toronto',
+          },
+          'recurrence': [
+            f'RRULE:FREQ=DAILY;COUNT={n_days}'
+          ],
+          'attendees': [
+            {'email': 'ankitmittaliitb@gmail.com'},
+          ],
+          'reminders': {
+            'useDefault': False,
+            'overrides': [
+              {'method': 'email', 'minutes': 24 * 60},
+            ],
+          },
+        }
 
-    def __init__(self):
+    def __init__(self, n_days, start_date):
         self.creds = None
+        self.start_date = datetime.datetime(*start_date, 9)
         self.scopes = ['https://www.googleapis.com/auth/calendar.events']
         self.login()
         self.service = build('calendar', 'v3', credentials=self.creds)
+        self.template = self.get_template(n_days)
 
     def login(self):
         """
@@ -56,7 +65,7 @@ class GoogleCalendar:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    'credentials.json', scopes)
+                    'credentials.json', self.scopes)
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
             with open('token.pickle', 'wb') as token:
@@ -69,7 +78,7 @@ class GoogleCalendar:
         """
         event = self.service.events().insert(
             calendarId='primary',
-            body=self.EVENT_TEMPLATE,
+            body=self.template,
             sendUpdates='all',
             supportsAttachments=True,
         ).execute()
@@ -98,21 +107,3 @@ class GoogleCalendar:
             eventId=event_instance['id'],
             body=body,
         ).execute()
-
-
-if __name__ == '__main__':
-    event = {'kind': 'calendar#event', 'etag': '"3155299049108000"', 'id': 'nar8j743rfc3g77biboi6vl9dc', 'status': 'confirmed', 'htmlLink': 'https://www.google.com/calendar/event?eid=bmFyOGo3NDNyZmMzZzc3Ymlib2k2dmw5ZGNfMjAyMDAxMDFUMTYwMDAwWiBhbmtpdG1sQG0', 'created': '2019-12-29T19:58:44.000Z', 'updated': '2019-12-29T19:58:44.689Z', 'summary': "Today's cleaning tasks", 'creator': {'email': 'ankitml@gmail.com', 'self': True}, 'organizer': {'email': 'ankitml@gmail.com', 'self': True}, 'start': {'dateTime': '2020-01-01T11:00:00-05:00', 'timeZone': 'America/Toronto'}, 'end': {'dateTime': '2020-01-01T12:00:00-05:00', 'timeZone': 'America/Toronto'}, 'recurrence': ['RRULE:FREQ=DAILY;COUNT=10'], 'iCalUID': 'nar8j743rfc3g77biboi6vl9dc@google.com', 'sequence': 0, 'attendees': [{'email': 'ankitmittaliitb@gmail.com', 'responseStatus': 'needsAction'}], 'reminders': {'useDefault': False, 'overrides': [{'method': 'email', 'minutes': 1440}]}}
-    google_cal = GoogleCalendar()
-    #event = google_cal.create_reoccuring_event()
-    all_instances = google_cal.get_all_instances_of_reoccuring_event(event)
-    for i, instance in enumerate(all_instances):
-        time.sleep(.5)
-        instance_date = datetime.datetime.strptime(
-            instance['start']['dateTime'][0:10],
-            '%Y-%m-%d'
-        )
-        date_tuple = instance_date.day, instance_date.month, instance_date.year
-        google_cal.modify_single_instance_description(
-            instance,
-            f"This event is for date {date_tuple}"
-        )
